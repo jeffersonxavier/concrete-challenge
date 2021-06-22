@@ -1,0 +1,19 @@
+{
+  "name": "concrete-challenge",
+  "version": "1.0.0",
+  "description": "Challenge received from Concrete",
+  "main": "src/server.js",
+  "repository": "https://github.com/jeffersonxavier/concrete-challenge",
+  "author": "Jefferson Xavier",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js --ignore __tests__"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
