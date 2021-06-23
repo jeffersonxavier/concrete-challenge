@@ -50,16 +50,14 @@ describe('UserService', () => {
 
   it('should signIn with valid credentials', async () => {
     jest.spyOn(User, 'findOne').mockReturnValue(userComplete);
-    jest
-      .spyOn(AuthUtil, 'comparePasswords')
-      .mockReturnValue(Promise.resolve(true));
+    jest.spyOn(bcrypt, 'compare').mockReturnValue(Promise.resolve(true));
     jest
       .spyOn(AuthUtil, 'generateToken')
       .mockReturnValue(Promise.resolve('jsonwebtokentest'));
 
     const user = await UserService.signIn(userData);
     expect(User.findOne).toHaveBeenCalled();
-    expect(AuthUtil.comparePasswords).toHaveBeenCalled();
+    expect(bcrypt.compare).toHaveBeenCalled();
     expect(AuthUtil.generateToken).toHaveBeenCalled();
     expect(user._id).toBe('id_user');
     expect(user.token).toBe('jsonwebtokentest');
@@ -80,16 +78,14 @@ describe('UserService', () => {
 
   it('should not signIn with invalid password', async () => {
     jest.spyOn(User, 'findOne').mockReturnValue(userComplete);
-    jest
-      .spyOn(AuthUtil, 'comparePasswords')
-      .mockReturnValue(Promise.resolve(false));
+    jest.spyOn(bcrypt, 'compare').mockReturnValue(Promise.resolve(false));
 
     try {
       await UserService.signIn(userData);
       throw new Error({});
     } catch (error) {
       expect(User.findOne).toHaveBeenCalled();
-      expect(AuthUtil.comparePasswords).toHaveBeenCalled();
+      expect(bcrypt.compare).toHaveBeenCalled();
       expect(error.status).toBe(401);
       expect(error.message).toBe('User/Password Invalid');
     }

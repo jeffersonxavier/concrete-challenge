@@ -23,7 +23,7 @@ module.exports = {
     const user = await User.findOne({ email });
     if (!user) throw { status: 401, message: 'User/Password Invalid' };
 
-    const equalsPass = await AuthUtil.comparePasswords(password, user.password);
+    const equalsPass = await bcrypt.compare(password, user.password);
     if (!equalsPass) throw { status: 401, message: 'User/Password Invalid' };
 
     user.token = await AuthUtil.generateToken(user.email);
