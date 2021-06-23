@@ -3,6 +3,22 @@ const User = require('../models/User');
 const AuthUtil = require('../utils/AuthUtil');
 
 module.exports = {
+  signUp: async userToCreate => {
+    let user = await User.findOne({ email: userToCreate.email });
+    if (user) throw { status: 400, message: 'E-mail already registered' };
+
+    const password = await bcrypt.hash(userToCreate.password, 7);
+
+    user = await User.create({
+      ...userToCreate,
+      lastLogin: new Date(),
+      password,
+      token: await AuthUtil.generateToken(userToCreate.email)
+    });
+
+    return user.toJSON();
+  },
+
   signIn: async (email, password) => {
     const user = await User.findOne({ email });
     if (!user) throw { status: 401, message: 'User/Password Invalid' };
@@ -13,22 +29,6 @@ module.exports = {
     user.token = await AuthUtil.generateToken(user.email);
     user.lastLogin = new Date();
     await user.save();
-
-    return user.toJSON();
-  },
-
-  signUp: async userToCreate => {
-    let user = await User.findOne({ email: userToCreate.email });
-    if (user) throw { status: 401, message: 'E-mail already registered' };
-
-    const password = await bcrypt.hash(userToCreate.password, 7);
-
-    user = await User.create({
-      ...userToCreate,
-      lastLogin: new Date(),
-      password,
-      token: await AuthUtil.generateToken(userToCreate.email)
-    });
 
     return user.toJSON();
   },
