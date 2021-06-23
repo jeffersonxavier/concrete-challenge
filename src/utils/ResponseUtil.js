@@ -1,8 +1,8 @@
 module.exports = {
-  processRequest: (response, serviceFunction) => {
+  processRequest: (response, serviceFunction, successStatus = 200) => {
     serviceFunction()
       .then(data => {
-        response.json(data);
+        response.status(successStatus).json(data);
       })
       .catch(error => {
         console.log(error);

@@ -1,9 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const jwtSecret =
-  process.env.JWT_SCECRET || 'my-jwt-secret-change-in-production';
-
 module.exports = {
   buildPass: pass => {
     return new Promise((resolve, reject) => {
@@ -24,11 +21,9 @@ module.exports = {
     });
   },
 
-  generateToken: id => {
-    const expiresAt = new Date(new Date().getTime() + 1000 * 60 * 30); // 30 minutes to expire token
-
-    const payload = { expiresAt, id };
-    return jwt.sign(payload, jwtSecret);
+  generateToken: async email => {
+    const jwtSecret = await bcrypt.hash(email, 7);
+    return jwt.sign({ email }, jwtSecret);
   },
 
   isAuthenticated: (req, res, next) => {
@@ -40,16 +35,11 @@ module.exports = {
         authorization[0] === 'Bearer' &&
         authorization[1];
 
-      const payload = jwt.verify(authToken, jwtSecret);
-      if (new Date() > new Date(payload.expiresAt))
-        return res.status(401).json({ message: 'Token Expired!' });
-
-      req.user = payload;
-      delete req.user.expiresAt;
+      req.token = authToken;
 
       return next();
     } catch (error) {
-      return res.status(401).json({ message: 'Invalid Authorization Token!' });
+      return res.status(401).json({ message: 'Unauthorized' });
     }
   }
 };
