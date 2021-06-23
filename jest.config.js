@@ -26,6 +26,7 @@ module.exports = {
     '!src/server.js',
     '!src/app.js',
     '!src/routes.js',
+    '!src/models/**',
     '!src/controllers/**',
     '!src/utils/ResponseUtil.js'
   ],
